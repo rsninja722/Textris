@@ -1,3 +1,5 @@
+var repeatTimer = Date.now();
+var delayTimer = Date.now();
 function handleInput() {
     switch (state) {
         case states.title:
@@ -7,7 +9,27 @@ function handleInput() {
             if (keyPress[k.DOWN]) {
                 menuDown();
             }
-            if (keyPress[k.SPACE]) {
+            if (keyPress[k.RIGHT]) {
+                menuRight();
+                repeatTimer = Date.now()
+            }
+            if (keyDown[k.RIGHT] && Date.now() - repeatTimer > 200) {
+                if (Date.now() - delayTimer > 50) {
+                    menuRight();
+                    delayTimer = Date.now();
+                }
+            }
+            if (keyPress[k.LEFT]) {
+                menuLeft();
+                repeatTimer = Date.now()
+            }
+            if (keyDown[k.LEFT] && Date.now() - repeatTimer > 200) {
+                if (Date.now() - delayTimer > 50) {
+                    menuLeft();
+                    delayTimer = Date.now();
+                }
+            }
+            if (keyPress[k.SPACE] || keyPress[k.ENTER]) {
                 menuSelect();
             }
             break;
@@ -66,6 +88,12 @@ function resetInput() {
 
 
 function kdown(e) {
+    if (abuffer.length === 0) {
+        loadSounds();
+    }
+    if (state === states.title) {
+        bindKey(e);
+    }
     var h = e.keyCode;
     keyPress[h] = keyPress[h] == undefined ? 1 : 0;
     keyDown[h] = 1;

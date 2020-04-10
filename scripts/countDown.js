@@ -4,9 +4,6 @@ function handleCountDown(isNewState) {
     if (isNewState) {
         game.style.letterSpacing = "-4px";
         countDownStart = time;
-        if (abuffer.length === 0) {
-            loadSounds();
-        }
     }
     var countTime = 3 + (countDownStart - time) / 1000;
     if (countTime <= 0) {

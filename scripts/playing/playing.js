@@ -9,6 +9,8 @@ var previewNames = [];
 var clears = [];
 var animationColumns = [];
 var linesCleared = 0;
+var lastMoveWasSpin = false;
+var textBuffer = [];
 var hold = {
     piece: undefined,
     pieceName: undefined,
@@ -33,6 +35,10 @@ var timers = {
 };
 
 function handlePlaying(isNewState) {
+    if (!(frameCount % 7)) {
+        textBuffer.shift();
+    }
+
     if (isNewState) {
         reset();
         var keys = Object.keys(timers);
@@ -51,8 +57,9 @@ function handlePlaying(isNewState) {
             ++py;
             timers.place = time;
         } else {
-            if(time - timers.place > placeDelay) {
+            if (time - timers.place > placeDelay) {
                 placePiece();
+                play(sounds.place);
                 piece = undefined;
                 return;
             }
@@ -62,6 +69,7 @@ function handlePlaying(isNewState) {
 
     // hold
     if (keyPress[keysBindings.hold] && !hold.used) {
+        play(sounds.hold);
         var pieceCache = pieces[pieceNames.indexOf(pieceName)].slice();
         var pieceNameCache = pieceName;
         if (hold.piece === undefined) {
@@ -90,6 +98,7 @@ function handlePlaying(isNewState) {
                 prot = prot % 4;
                 timers.place = time;
                 play(sounds.rotate);
+                lastMoveWasSpin = true;
                 break;
             }
         }
@@ -109,6 +118,7 @@ function handlePlaying(isNewState) {
                 prot = prot < 0 ? 3 : prot;
                 timers.place = time;
                 play(sounds.rotate);
+                lastMoveWasSpin = true;
                 break;
             }
         }
@@ -121,6 +131,7 @@ function handlePlaying(isNewState) {
             timers.place = time;
             timers.arrl = time;
             play(sounds.move);
+            lastMoveWasSpin = false;
         }
         timers.das = time;
     }
@@ -130,6 +141,7 @@ function handlePlaying(isNewState) {
                 while (!colliding(piece, px - 1, py)) {
                     --px;
                     timers.place = time;
+                    lastMoveWasSpin = false;
                 }
             } else {
                 if (time - timers.arrl > arr) {
@@ -137,6 +149,7 @@ function handlePlaying(isNewState) {
                         --px;
                         timers.place = time;
                         play(sounds.move);
+                        lastMoveWasSpin = false;
                     }
                     timers.arrl = time;
                 }
@@ -152,6 +165,7 @@ function handlePlaying(isNewState) {
             timers.place = time;
             timers.arrr = time;
             play(sounds.move);
+            lastMoveWasSpin = false;
         }
         timers.das = time;
     }
@@ -161,6 +175,7 @@ function handlePlaying(isNewState) {
                 while (!colliding(piece, px + 1, py)) {
                     ++px;
                     timers.place = time;
+                    lastMoveWasSpin = false;
                 }
             } else {
                 if (time - timers.arrr > arr) {
@@ -168,6 +183,7 @@ function handlePlaying(isNewState) {
                         ++px;
                         timers.place = time;
                         play(sounds.move);
+                        lastMoveWasSpin = false;
                     }
                     timers.arrr = time;
                 }
@@ -182,6 +198,7 @@ function handlePlaying(isNewState) {
             timers.softDrop = time;
             timers.place = time;
             play(sounds.move);
+            lastMoveWasSpin = false;
         }
     }
     if (keyDown[keysBindings.softDrop]) {
@@ -190,6 +207,7 @@ function handlePlaying(isNewState) {
                 while (!colliding(piece, px, py + 1)) {
                     ++py;
                     timers.place = time;
+                    lastMoveWasSpin = false;
                 }
             } else {
                 if (time - timers.softDrop > softDrop) {
@@ -198,6 +216,7 @@ function handlePlaying(isNewState) {
                         timers.softDrop = time;
                         timers.place = time;
                         play(sounds.move);
+                        lastMoveWasSpin = false;
                     }
                 }
             }
@@ -209,16 +228,17 @@ function handlePlaying(isNewState) {
         animationColumns = [];
         for (var y = 0; y < piece.length; y++) {
             for (var x = 0; x < piece[0].length; x++) {
-                if(piece[y][x]) {
-                    if(!animationColumns.includes(x + px)) {
+                if (piece[y][x]) {
+                    if (!animationColumns.includes(x + px)) {
                         animationColumns.push(x + px);
-                    } 
+                    }
                 }
             }
         }
         timers.dropAnimation = time;
         while (!colliding(piece, px, py + 1)) {
             ++py;
+            lastMoveWasSpin = false;
         }
         play(sounds.drop);
         placePiece();
@@ -227,28 +247,42 @@ function handlePlaying(isNewState) {
 
     // clear lines
     clearCount = 0;
-    for(var y=0;y<board.length;y++) {
+    for (var y = 0; y < board.length; y++) {
         var complete = true;
-        for(var x=0;x<board[0].length;x++) {
-            if(!board[y][x]) {
+        for (var x = 0; x < board[0].length; x++) {
+            if (!board[y][x]) {
                 complete = false;
                 break;
             }
-        } 
-        if(complete) {
-            board.splice(y,1);
+        }
+        if (complete) {
+            board.splice(y, 1);
             board.unshift(new Array(board[0].length).fill(false));
             clears.push(y);
             timers.spin = time;
             ++linesCleared;
             ++clearCount;
-            if(linesCleared >= 40) {
+            if (linesCleared >= 40) {
                 state = states.end;
             }
         }
     }
-    if(clearCount>0) {
+    if (clearCount > 0) {
         play(sounds[`clear${clearCount}`]);
+        switch (clearCount) {
+            case 1:
+                addToTextBuffer("single ");
+                break;
+            case 2:
+                addToTextBuffer("double ");
+                break;
+            case 3:
+                addToTextBuffer("triple ");
+                break;
+            case 4:
+                addToTextBuffer("textris ");
+                break;
+        }
     }
 }
 
@@ -263,7 +297,7 @@ function nextPiece(useHold) {
     px = 4;
     py = 1;
     prot = 0;
-    if(colliding(piece,px,py)) {
+    if (colliding(piece, px, py)) {
         state = states.count;
     }
 }
@@ -272,6 +306,7 @@ function reset() {
     makeBoard();
     piece = undefined;
     preview = [];
+    previewNames = [];
     animationColumns = [];
     clears = [];
     bag = [0, 1, 2, 3, 4, 5, 6];
@@ -313,7 +348,7 @@ function drawPlaying() {
     for (var y = 0; y < 22; y++) {
         var tempArray = [];
         for (var x = 0; x < 40; x++) {
-            if (x > 8 && x < 30 && y > 1 && x%2) {
+            if (x > 8 && x < 30 && y > 1 && x % 2) {
                 tempArray.push(".");
             } else {
                 tempArray.push(" ");
@@ -322,26 +357,26 @@ function drawPlaying() {
         printBoard.push(tempArray);
     }
 
-    if(time - timers.dropAnimation < 300) {
-        var height = ~~((time - timers.dropAnimation)/10);
+    if (time - timers.dropAnimation < 300) {
+        var height = ~~((time - timers.dropAnimation) / 10);
         height = height > 19 ? 19 : height;
-        
-        for(var i=0;i<animationColumns.length;i++) {
-            var x = animationColumns[i]*2 + 10;
+
+        for (var i = 0; i < animationColumns.length; i++) {
+            var x = animationColumns[i] * 2 + 10;
             for (var y = 2 + height; y < 22; y++) {
                 printBoard[y][x] = ":";
-                printBoard[y][x+1] = ":";
+                printBoard[y][x + 1] = ":";
             }
         }
     }
-    if(time - timers.spin > 1000) {
+    if (time - timers.spin > 1000) {
         clears = [];
     }
-    
-    var cycle = (~~((time - timers.spin +100)/((time - timers.spin)/20))) %3;
+
+    var cycle = (~~((time - timers.spin + 100) / ((time - timers.spin) / 20))) % 3;
     for (var i = 2; i < 22; i++) {
         var char = "|";
-        if(clears.includes(i)) {
+        if (clears.includes(i)) {
             char = cycle == 0 ? "|" : (cycle == 1 ? "\\" : "/");
         }
         printBoard[i][9] = char;
@@ -351,16 +386,18 @@ function drawPlaying() {
     drawBoard(printBoard);
 
     drawGhost(printBoard);
-    
+
     drawPiece(printBoard);
 
     drawHold(printBoard);
 
     drawPreview(printBoard);
 
-    textToBoard(printBoard,"clear " + (40 - linesCleared),0,18);
-    textToBoard(printBoard,"time:  " + (time - timers.game)/1000,18,0);
-    textToBoard(printBoard,`${keyDown[keysBindings.cww] ? "-" : "#"}${keyDown[keysBindings.cw] ? "-" : "#"} ${keyDown[keysBindings.hold] ? "-" : "#"}  ${keyDown[keysBindings.hardDrop] ? "-" : "#"}  ${keyDown[keysBindings.left] ? "-" : "#"}${keyDown[keysBindings.softDrop] ? "-" : "#"}${keyDown[keysBindings.right] ? "-" : "#"}`,0,0);
+    textToBoard(printBoard, textBuffer.slice(0, textBuffer.length < 20 ? textBuffer.length : 20).join(""), 10, 1);
+
+    textToBoard(printBoard, "clear " + (40 - linesCleared), 0, 18);
+    textToBoard(printBoard, "time:  " + (time - timers.game) / 1000, 18, 0);
+    textToBoard(printBoard, `${keyDown[keysBindings.cww] ? "-" : "#"}${keyDown[keysBindings.cw] ? "-" : "#"} ${keyDown[keysBindings.hold] ? "-" : "#"}  ${keyDown[keysBindings.hardDrop] ? "-" : "#"}  ${keyDown[keysBindings.left] ? "-" : "#"}${keyDown[keysBindings.softDrop] ? "-" : "#"}${keyDown[keysBindings.right] ? "-" : "#"}`, 0, 0);
 
     var txt = "";
     for (var y = 0; y < printBoard.length; y++) {
@@ -377,9 +414,20 @@ function drawPlaying() {
     return txt;
 }
 
-function textToBoard(matrix,txt,x,y) {
-    for(var i=0;i<txt.length;i++) {
-        matrix[y][x+i] = txt[i];
+function addToTextBuffer(txt) {
+    var buffStr = textBuffer.join("");
+    if (buffStr.length < 18) {
+        txt = "".padStart(18 - buffStr.length, " ") + txt;
+    }
+    var chars = txt.split("");
+    for (let i = 0; i < chars.length; i++) {
+        textBuffer.push(chars[i]);
+    }
+}
+
+function textToBoard(matrix, txt, x, y) {
+    for (var i = 0; i < txt.length; i++) {
+        matrix[y][x + i] = txt[i];
     }
 }
 

@@ -5,21 +5,6 @@ var state = states.title;
 var lastState;
 var frameCount = 0;
 
-// switch(state) {
-//     case states.title:
-
-//         break;
-//     case states.count:
-
-//         break;
-//     case states.playing:
-
-//         break;
-//     case states.end:
-
-//         break;
-// }
-
 addListenersTo(document.body);
 
 function draw() {
