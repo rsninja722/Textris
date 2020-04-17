@@ -33,6 +33,7 @@ var timers = {
     dropAnimation: 0,
     game: 0
 };
+var gameTimeOffset = 0;
 
 function handlePlaying(isNewState) {
     if (!(frameCount % 7)) {
@@ -40,15 +41,24 @@ function handlePlaying(isNewState) {
     }
 
     if (isNewState) {
-        reset();
-        var keys = Object.keys(timers);
-        for (var i = 0; i < keys.length; i++) {
-            timers[keys[i]] = time;
-        }
+        game.innerText = drawPlaying();
     }
 
+    // take next piece from preview
     if (piece === undefined) {
         nextPiece(false);
+    }
+
+    // reset
+    if (keyPress[k.r] || keyPress[k.F4]) {
+        state = states.count;
+        return 0;
+    }
+
+    // pause
+    if (keyPress[k.p] || keyPress[k.ESCAPE]) {
+        state = states.paused;
+        return 0;
     }
 
     // gravity
@@ -61,7 +71,7 @@ function handlePlaying(isNewState) {
                 placePiece();
                 play(sounds.place);
                 piece = undefined;
-                return;
+                return 0;
             }
         }
         timers.gravity = time;
@@ -263,7 +273,15 @@ function handlePlaying(isNewState) {
             ++linesCleared;
             ++clearCount;
             if (linesCleared >= 40) {
+                var sprintTime = ((time - timers.game - gameTimeOffset) / 1000);
+                endMessage = "time: " + sprintTime;
+                if (localStorage.TextrisTimes === undefined) {
+                    localStorage.TextrisTimes = sprintTime + ",";
+                } else {
+                    localStorage.TextrisTimes = localStorage.TextrisTimes + sprintTime + ",";
+                }
                 state = states.end;
+
             }
         }
     }
@@ -298,7 +316,8 @@ function nextPiece(useHold) {
     py = 1;
     prot = 0;
     if (colliding(piece, px, py)) {
-        state = states.count;
+        endMessage = "topped out!";
+        state = states.end;
     }
 }
 
@@ -309,13 +328,21 @@ function reset() {
     previewNames = [];
     animationColumns = [];
     clears = [];
+    linesCleared = 0;
+    lastMoveWasSpin = false;
+    textBuffer = [];
     bag = [0, 1, 2, 3, 4, 5, 6];
+    gameTimeOffset = 0;
     hold = {
         piece: undefined,
         pieceName: undefined,
         used: false
     };
     fillPreview();
+    var keys = Object.keys(timers);
+    for (var i = 0; i < keys.length; i++) {
+        timers[keys[i]] = time;
+    }
     timers.game = time;
 }
 
@@ -396,7 +423,7 @@ function drawPlaying() {
     textToBoard(printBoard, textBuffer.slice(0, textBuffer.length < 20 ? textBuffer.length : 20).join(""), 10, 1);
 
     textToBoard(printBoard, "clear " + (40 - linesCleared), 0, 18);
-    textToBoard(printBoard, "time:  " + (time - timers.game) / 1000, 18, 0);
+    textToBoard(printBoard, "time:  " + (time - timers.game - gameTimeOffset) / 1000, 18, 0);
     textToBoard(printBoard, `${keyDown[keysBindings.cww] ? "-" : "#"}${keyDown[keysBindings.cw] ? "-" : "#"} ${keyDown[keysBindings.hold] ? "-" : "#"}  ${keyDown[keysBindings.hardDrop] ? "-" : "#"}  ${keyDown[keysBindings.left] ? "-" : "#"}${keyDown[keysBindings.softDrop] ? "-" : "#"}${keyDown[keysBindings.right] ? "-" : "#"}`, 0, 0);
 
     var txt = "";

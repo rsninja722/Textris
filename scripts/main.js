@@ -1,6 +1,6 @@
 var game = document.getElementById("game");
 var time;
-var states = { title: 0, count: 1, playing: 2, end: 3 };
+var states = { title: 0, count: 1, playing: 2, end: 3, paused: 4 };
 var state = states.title;
 var lastState;
 var frameCount = 0;
@@ -20,7 +20,10 @@ function draw() {
             game.innerText = drawPlaying();
             break;
         case states.end:
-
+            game.innerText = drawEnd();
+            break;
+        case states.paused:
+            game.innerText = drawPause();
             break;
     }
     requestAnimationFrame(draw);
@@ -39,7 +42,7 @@ function updateLoop() {
 
     switch (state) {
         case states.title:
-
+            handleTitle(newState);
             break;
         case states.count:
             handleCountDown(newState);
@@ -48,7 +51,10 @@ function updateLoop() {
             handlePlaying(newState);
             break;
         case states.end:
-
+            handleEnd(newState);
+            break;
+        case states.paused:
+            handlePause(newState);
             break;
     }
 

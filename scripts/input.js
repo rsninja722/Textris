@@ -1,47 +1,66 @@
 var repeatTimer = Date.now();
 var delayTimer = Date.now();
+var inputWait = 0;
 function handleInput() {
-    switch (state) {
-        case states.title:
-            if (keyPress[k.UP]) {
-                menuUp();
-            }
-            if (keyPress[k.DOWN]) {
-                menuDown();
-            }
-            if (keyPress[k.RIGHT]) {
-                menuRight();
-                repeatTimer = Date.now()
-            }
-            if (keyDown[k.RIGHT] && Date.now() - repeatTimer > 200) {
-                if (Date.now() - delayTimer > 50) {
+    if (time - inputWait > 500) {
+        switch (state) {
+            case states.title:
+                if (keyPress[k.UP]) {
+                    menuUp();
+                }
+                if (keyPress[k.DOWN]) {
+                    menuDown();
+                }
+                if (keyPress[k.RIGHT]) {
                     menuRight();
-                    delayTimer = Date.now();
+                    repeatTimer = Date.now()
                 }
-            }
-            if (keyPress[k.LEFT]) {
-                menuLeft();
-                repeatTimer = Date.now()
-            }
-            if (keyDown[k.LEFT] && Date.now() - repeatTimer > 200) {
-                if (Date.now() - delayTimer > 50) {
+                if (keyDown[k.RIGHT] && Date.now() - repeatTimer > 200) {
+                    if (Date.now() - delayTimer > 50) {
+                        menuRight();
+                        delayTimer = Date.now();
+                    }
+                }
+                if (keyPress[k.LEFT]) {
                     menuLeft();
-                    delayTimer = Date.now();
+                    repeatTimer = Date.now()
                 }
-            }
-            if (keyPress[k.SPACE] || keyPress[k.ENTER]) {
-                menuSelect();
-            }
-            break;
-        case states.count:
+                if (keyDown[k.LEFT] && Date.now() - repeatTimer > 200) {
+                    if (Date.now() - delayTimer > 50) {
+                        menuLeft();
+                        delayTimer = Date.now();
+                    }
+                }
+                if (keyPress[k.SPACE] || keyPress[k.ENTER]) {
+                    menuSelect();
+                }
+                break;
+            case states.count:
 
-            break;
-        case states.playing:
+                break;
+            case states.playing:
 
-            break;
-        case states.end:
-
-            break;
+                break;
+            case states.end:
+                if (keyPress[k.UP]) {
+                    EndMenuUp();
+                }
+                if (keyPress[k.DOWN]) {
+                    EndMenuDown();
+                }
+                if (keyPress[k.SPACE] || keyPress[k.ENTER]) {
+                    EndMenuSelect();
+                }
+                break;
+            case states.paused:
+                if(keyPress[k.p] || keyPress[k.ESCAPE]) {
+                    state = states.playing;
+                    gameTimeOffset += time - pauseTime;
+                    delete keyPress[k.p];
+                    delete keyPress[k.ESCAPE];
+                }
+                break;
+        }
     }
 }
 
@@ -91,10 +110,12 @@ function kdown(e) {
     if (abuffer.length === 0) {
         loadSounds();
     }
-    if (state === states.title) {
-        bindKey(e);
-    }
     var h = e.keyCode;
+    if (state === states.title) {
+        if (h !== 27 && h !== 115 && h !== 80 && h !== 82) {
+            bindKey(e);
+        }
+    }
     keyPress[h] = keyPress[h] == undefined ? 1 : 0;
     keyDown[h] = 1;
     if (preventedEvents[0]) { e.preventDefault() }

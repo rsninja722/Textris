@@ -9,12 +9,13 @@ function handleCountDown(isNewState) {
     if (countTime <= 0) {
         play(sounds.rotate);
         state = states.playing;
+        reset();
     }
 }
 
 
 function generateCountDownText() {
-    var txt = "";
+    var txt = "\n\np or esc to pause\n\nr or f4  to reset\n\n\n\n\n\n\n                    ";
     var countTime = 3 + (countDownStart - time) / 1000;
     var num;
     if (countTime < 1) {

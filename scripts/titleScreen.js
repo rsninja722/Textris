@@ -1,10 +1,10 @@
-const UI = {
-    mainUI: [
+const UI = [
+    [
         "play",
         "options",
         "exit"
     ],
-    options: [
+    [
         "save and return to menu",
         "sfx",
         "left",
@@ -20,7 +20,7 @@ const UI = {
         "gravity",
         "place delay"
     ]
-};
+];
 
 const optionTypes = [
     "none",
@@ -57,9 +57,32 @@ const sliderMaxCur = [
 ];
 
 var UIIndex = 0;
-var curMenu = "mainUI";
+var curMenu = 0;
 var listeningForBind = false;
 var timeOut = 0;
+var personalTimes = "";
+
+function handleTitle(isNewState) {
+    if(isNewState) {
+        if(localStorage.TextrisTimes !== undefined) {
+            var tempTimes = localStorage.TextrisTimes.split(",");
+            tempTimes.pop();
+            for(var i=0;i<tempTimes.length;i++) {
+                tempTimes[i] = parseFloat(tempTimes[i]);
+            }
+            tempTimes.sort(function (a, b) {
+                if (a > b) return 1;
+                if (b > a) return -1;
+                return 0;
+            });
+            var tempStr = "\npersonal times\n\n";
+            for(var i=0;i<tempTimes.length;i++) {
+                tempStr += tempTimes[i] + "\n";
+            }
+            personalTimes = tempStr;
+        }
+    }
+}
 
 function menuUp() {
     if (UIIndex > 0) {
@@ -80,7 +103,7 @@ function menuDown() {
 }
 
 function menuRight() {
-    if (curMenu === "options") {
+    if (curMenu === 1) {
         if (optionTypes[UIIndex] === "slider") {
             if (sliderMaxCur[UIIndex][1] < sliderMaxCur[UIIndex][0]) {
                 sliderMaxCur[UIIndex][1] += 10;
@@ -91,7 +114,7 @@ function menuRight() {
 }
 
 function menuLeft() {
-    if (curMenu === "options") {
+    if (curMenu === 1) {
         if (optionTypes[UIIndex] === "slider") {
             if (sliderMaxCur[UIIndex][1] > 0) {
                 sliderMaxCur[UIIndex][1] -= 10;
@@ -130,17 +153,17 @@ function menuSelect() {
     }
     if (selection === "options") {
         UIIndex = 0;
-        curMenu = "options";
+        curMenu = 1;
     }
     if (selection === "save and return to menu") {
         UIIndex = 0;
-        curMenu = "mainUI";
+        curMenu = 0;
         saveSettings();
     }
     if (selection === "exit") {
         window.location.replace("https://rsninja.dev/index.html");
     }
-    if(curMenu === "options" && optionTypes[UIIndex] === "key") {
+    if(curMenu === 1 && optionTypes[UIIndex] === "key") {
         if(Date.now() - timeOut > 200) {
             listeningForBind = true;
         }
@@ -198,14 +221,15 @@ function saveSettings() {
 }
 
 function generateMenu() {
-    var txt = curMenu === "mainUI" ? "Textris\n\narrow keys to navigate\nspace to select\n___________________________\n\n" : "Options\n___________________________\n\n";
+    var txt = curMenu === 0 ? "Textris\n\narrow keys to navigate\nspace to select\n___________________________\n\n" : "Options\n___________________________\n\n";
     var tempMenu = UI[curMenu];
     for (var i = 0; i < tempMenu.length; i++) {
         txt += tempMenu[i];
-        txt += (optionTypes[i] === "slider" && curMenu === "options" ? generateSlider(i) : ""); 
-        txt += (optionTypes[i] === "key" && curMenu === "options" ? " " + generateKey(i) : ""); 
+        txt += (optionTypes[i] === "slider" && curMenu === 1 ? generateSlider(i) : ""); 
+        txt += (optionTypes[i] === "key" && curMenu === 1 ? " " + generateKey(i) : ""); 
         txt += (~~(frameCount / 20) % 2 && UIIndex === i ? "_" : "") + "\n\n";
     }
+    txt += curMenu === 0 ? personalTimes : "";
     return txt;
 }
 

@@ -13,7 +13,7 @@ var keysBindings = {
     right: k.RIGHT
 };
 
-if(localStorage.textris !== undefined) {
+if (localStorage.textris !== undefined) {
     var settings = JSON.parse(localStorage.textris);
     arr = settings.arr;
     das = settings.das;
@@ -26,5 +26,5 @@ if(localStorage.textris !== undefined) {
     keysBindings.hardDrop = settings.keysBindings.hardDrop;
     keysBindings.softDrop = settings.keysBindings.softDrop;
     keysBindings.left = settings.keysBindings.left;
-    keysBindings.right = settings.keysBindings.right; 
+    keysBindings.right = settings.keysBindings.right;
 }
