@@ -312,7 +312,7 @@ function nextPiece(useHold) {
         piece = preview.splice(0, 1)[0];
         pieceName = previewNames.splice(0, 1)[0];
     }
-    px = 4;
+    px = 3;
     py = 1;
     prot = 0;
     if (colliding(piece, px, py)) {
