@@ -1,6 +1,6 @@
 # Textris
 Text based generic block dropping action puzzle game 
 
-wip
+Features modern SRS including kicks, adjustable DAS, ARR, drop speed and controls while using ascii rendering to stay faithful to the appearance of the Electronika 60 version
 
-trying to stick with basic stuff like for loops and normal functions so I can easily translate this into other languages if I want later
+someone even made a [wiki page for](https://tetris.wiki/Textris_(rsninja)) it
