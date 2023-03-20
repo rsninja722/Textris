@@ -134,6 +134,27 @@ function handlePlaying(isNewState) {
         }
     }
 
+    // 180
+    if (keyPress[keysBindings.oneEighty]) {
+        var shallowCopy = piece.slice();
+        var kicks = kickTable[`${pieceName === "i" ? "line" : "norm"}${prot}${prot - 1 < 0 ? 3 : prot - 1}`];
+        shallowCopy = rotCWW(shallowCopy, shallowCopy.length);
+        shallowCopy = rotCWW(shallowCopy, shallowCopy.length);
+        for (var i = 0; i < 5; i++) {
+            if (!colliding(shallowCopy, px + kicks[i][0], py - kicks[i][1])) {
+                piece = shallowCopy;
+                px += kicks[i][0];
+                py -= kicks[i][1];
+                --prot;
+                prot = prot < 0 ? 3 : prot;
+                timers.place = time;
+                play(sounds.rotate);
+                lastMoveWasSpin = true;
+                break;
+            }
+        }
+    }
+
     // left
     if (keyPress[keysBindings.left]) {
         if (!colliding(piece, px - 1, py)) {

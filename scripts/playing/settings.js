@@ -10,7 +10,8 @@ var keysBindings = {
     hardDrop: k.SPACE,
     softDrop: k.DOWN,
     left: k.LEFT,
-    right: k.RIGHT
+    right: k.RIGHT,
+    oneEighty: k.a
 };
 
 if (localStorage.textris !== undefined) {
@@ -22,6 +23,7 @@ if (localStorage.textris !== undefined) {
     placeDelay = settings.placeDelay;
     keysBindings.cww = settings.keysBindings.cww;
     keysBindings.cw = settings.keysBindings.cw;
+    keysBindings.oneEighty = settings.keysBindings.oneEighty ?? k.a;
     keysBindings.hold = settings.keysBindings.hold;
     keysBindings.hardDrop = settings.keysBindings.hardDrop;
     keysBindings.softDrop = settings.keysBindings.softDrop;

@@ -18,7 +18,8 @@ const UI = [
         "arr",
         "soft speed",
         "gravity",
-        "place delay"
+        "place delay",
+        "180"
     ]
 ];
 
@@ -36,7 +37,8 @@ const optionTypes = [
     "slider",
     "slider",
     "slider",
-    "slider"
+    "slider",
+    "key"
 ];
 
 const sliderMaxCur = [
@@ -54,6 +56,7 @@ const sliderMaxCur = [
     [100, softDrop],
     [1000, gravity],
     [1000, placeDelay],
+    [0, 0]
 ];
 
 var UIIndex = 0;
@@ -175,25 +178,28 @@ function bindKey(e) {
         switch(UIIndex) {
             case 2:
                 keysBindings.left = e.keyCode;
-            break;
+                break;
             case 3:
                 keysBindings.right = e.keyCode;
-            break;
+                break;
             case 4:
                 keysBindings.cw = e.keyCode;
-            break;
+                break;
             case 5:
                 keysBindings.cww = e.keyCode;
-            break;
+                break;
             case 6:
                 keysBindings.hold = e.keyCode;
-            break;
+                break;
             case 7:
                 keysBindings.hardDrop = e.keyCode;
-            break;
+                break;
             case 8:
                 keysBindings.softDrop = e.keyCode;
-            break;
+                break;
+            case 14:
+                keysBindings.oneEighty = e.keyCode;
+                break;
         }
         timeOut = Date.now();
         listeningForBind = false;
@@ -211,6 +217,7 @@ function saveSettings() {
     exportObj.keysBindings = {
         cww: keysBindings.cww,
         cw: keysBindings.cw,
+        oneEighty: keysBindings.oneEighty,
         hold: keysBindings.hold,
         hardDrop: keysBindings.hardDrop,
         softDrop: keysBindings.softDrop,
@@ -240,25 +247,20 @@ function generateKey(index) {
     switch(index) {
         case 2:
             return keyboardMap[keysBindings.left];
-        break;
         case 3:
             return keyboardMap[keysBindings.right];
-        break;
         case 4:
             return keyboardMap[keysBindings.cw];
-        break;
         case 5:
             return keyboardMap[keysBindings.cww];
-        break;
         case 6:
             return keyboardMap[keysBindings.hold];
-        break;
         case 7:
             return keyboardMap[keysBindings.hardDrop];
-        break;
         case 8:
             return keyboardMap[keysBindings.softDrop];
-        break;
+        case 14:
+            return keyboardMap[keysBindings.oneEighty];
     }
 }
 
