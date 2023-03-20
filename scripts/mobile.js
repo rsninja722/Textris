@@ -7,6 +7,12 @@ mobileCheck = function() {
 
 
 if(mobileCheck()) {
+    var pre = document.getElementById("game");
+    pre.style.top = "10%";
+    pre.style.fontSize = "14px";
+    pre.style.lineHeight = "11px";
+
+
     class mobileButton {
         constructor(label, position, downFunc, upFunc) {
             this.button = document.createElement("button");
@@ -24,44 +30,44 @@ if(mobileCheck()) {
     }
 
     let mobileButtons = [
-        new mobileButton("180", {x: 2, y: 4, width: 10, height: 15}, function(e){
+        new mobileButton("180", {x: 2, y: 4, width: 10, height: 20}, function(e){
             keyPress[keysBindings.oneEighty]=1;e.preventDefault();
         }, function() {}),
-        new mobileButton("ccw", {x: 14, y: 4, width: 10, height: 15}, function(e){
+        new mobileButton("ccw", {x: 14, y: 4, width: 10, height: 20}, function(e){
             keyPress[keysBindings.cww]=1;e.preventDefault();
         }, function() {}),
-        new mobileButton("cw", {x: 26, y: 4, width: 10, height: 15}, function(e){
+        new mobileButton("cw", {x: 26, y: 4, width: 10, height: 20}, function(e){
             keyPress[keysBindings.cw]=1;e.preventDefault();
         }, function() {}),
-        new mobileButton("<", {x: 64, y: 4, width: 10, height: 15}, function(e){
+        new mobileButton("<", {x: 64, y: 4, width: 10, height: 20}, function(e){
             keyPress[keysBindings.left]=1;keyDown[keysBindings.left]=1;e.preventDefault();
         }, function() { delete keyDown[keysBindings.left];delete keyDown[keysBindings.left];}),
-        new mobileButton("\\/", {x: 76, y: 4, width: 10, height: 15}, function(e){
+        new mobileButton("\\/", {x: 76, y: 4, width: 10, height: 20}, function(e){
             keyPress[keysBindings.softDrop]=1;keyDown[keysBindings.softDrop]=1;e.preventDefault();
         }, function() { delete keyDown[keysBindings.softDrop];delete keyDown[keysBindings.softDrop];}),
-        new mobileButton(">", {x: 88, y: 4, width: 10, height: 15}, function(e){
+        new mobileButton(">", {x: 88, y: 4, width: 10, height: 20}, function(e){
             keyPress[keysBindings.right]=1;keyDown[keysBindings.right]=1;e.preventDefault();
         }, function() { delete keyDown[keysBindings.right];delete keyDown[keysBindings.right];}),
-        new mobileButton("\\_/", {x: 16, y: 84, width: 20, height: 15}, function(e){
+        new mobileButton("\\_/", {x: 16, y: 94, width: 20, height: 20}, function(e){
             keyPress[keysBindings.hardDrop]=1;e.preventDefault();
         }, function() {}),
-        new mobileButton("hold", {x: 64, y: 84, width: 20, height: 15}, function(e){
+        new mobileButton("hold", {x: 64, y: 94, width: 20, height: 20}, function(e){
             keyPress[keysBindings.hold]=1;e.preventDefault();
         }, function() {}),
 
-        new mobileButton("^", {x: 86, y: 60, width: 6, height: 8}, function(e){
+        new mobileButton("^", {x: 86, y: 70, width: 6, height: 8}, function(e){
             keyPress[k.UP]=1;e.preventDefault();if (abuffer.length === 0) {loadSounds();}
         }, function() {}),
-        new mobileButton(">", {x: 92, y: 68, width: 6, height: 8}, function(e){
+        new mobileButton(">", {x: 92, y: 78, width: 6, height: 8}, function(e){
             keyPress[k.RIGHT]=1;e.preventDefault();if (abuffer.length === 0) {loadSounds();}
         }, function() {}),
-        new mobileButton("<", {x: 80, y: 68, width: 6, height: 8}, function(e){
+        new mobileButton("<", {x: 80, y: 78, width: 6, height: 8}, function(e){
             keyPress[k.LEFT]=1;e.preventDefault();if (abuffer.length === 0) {loadSounds();}
         }, function() {}),
-        new mobileButton("\\/", {x: 86, y: 76, width: 6, height: 8}, function(e){
+        new mobileButton("\\/", {x: 86, y: 86, width: 6, height: 8}, function(e){
             keyPress[k.DOWN]=1;e.preventDefault();if (abuffer.length === 0) {loadSounds();}
         }, function() {}),
-        new mobileButton("#", {x: 86, y: 68, width: 6, height: 8}, function(e){
+        new mobileButton("#", {x: 86, y: 78, width: 6, height: 8}, function(e){
             keyPress[k.ENTER]=1;e.preventDefault();if (abuffer.length === 0) {loadSounds();}
         }, function() {}),
     ];
